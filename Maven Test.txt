@@ -1,0 +1,111 @@
+Setting Up in STS IDE
+1. Create a Maven Project:
+
+Open STS (Spring Tool Suite) IDE.
+Go to File -> New -> Project.
+Select Maven Project and click Next.
+Choose an appropriate archetype (e.g., maven-archetype-quickstart).
+Provide the following details:
+Group Id: (e.g., com.yourcompany)
+Artifact Id: (e.g., magento-product-search)
+Package: (e.g., com.yourcompany.tests)
+Click Finish.
+2. Add Dependencies:
+
+Right-click on your project in the Package Explorer and select Properties.
+Navigate to Maven -> Dependencies.
+Click Add and select "Browse...".
+Search for the following dependencies and add them:
+org.selenium:selenium-java (version: 4.7.3)
+org.testng:testng (version: 7.6.1)
+Click Apply and OK.
+3. Write Selenium Script:
+
+Right-click on the src/test/java folder and select New -> Class.
+Name the class MagentoProductSearchTest.java.
+Paste the following code into the class:
+Java
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import   
+ org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+public class   
+ MagentoProductSearchTest {
+
+    private WebDriver driver;
+
+    @BeforeTest
+    public void setUp() {
+        // Set the path to your ChromeDriver executable (download from https://chromedriver.chromium.org/)
+        System.setProperty("webdriver.chrome.driver", "/path/to/chromedriver");
+        driver = new ChromeDriver();
+    }
+
+    @Test
+    public void testProductSearch() {
+        String baseUrl = "https://magento.softwaretestingboard.com/";
+        String searchTerm = "Shirt";
+        String expectedTitle = "Magento Commerce | Search Results for: " + searchTerm;
+
+        driver.get(baseUrl);
+
+        // Identify search field and enter search term using appropriate locator (adjust if needed)
+        WebElement searchField = driver.findElement(By.id("search"));
+        searchField.sendKeys(searchTerm);
+
+        // Identify search button and click it (adjust if needed)
+        WebElement searchButton = driver.findElement(By.className("search-btn"));
+        searchButton.click();
+
+        // Wait for page to load (adjust wait strategy as needed)
+        try {
+            Thread.sleep(5000); // Replace with a more robust waiting mechanism, e.g., WebDriverWait
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Get actual page title
+        String actualTitle = driver.getTitle();
+
+        // Assert that actual title matches expected title
+        org.testng.Assert.assertEquals(actualTitle, expectedTitle);
+    }
+
+    @AfterTest
+    public void tearDown() {
+        driver.quit();
+    }
+}
+Use code with caution.
+
+Replace /path/to/chromedriver with the actual path to your ChromeDriver executable.
+Creating a Maven Project in Jenkins (Using Existing pom.xml)
+1. Install Maven Integration Plugin:
+
+Go to Jenkins -> Manage Jenkins.
+Navigate to Manage Plugins.
+Click on Available plugins tab.
+Search for "Maven Integration" and install the plugin.
+2. Create a New Job:
+
+Go to Jenkins -> New Item.
+Choose Freestyle Project and give it a name (e.g., Magento Product Search Test).
+In the Build Environment section, select Use system Maven settings.
+In the Build section, add a Build with Maven step:
+Select Goals: clean test
+Save the job configuration.
+3. Execute the Job:
+
+Go back to your Jenkins dashboard.
+Find your newly created job.
+Click on Build Now to trigger the test execution.
+4. Explanation:
+
+The clean test goals in the Maven build step will first clean the project and then execute the tests.
+Note:
+
+Ensure Jenkins has access to your local Maven repository where the downloaded dependencies are
